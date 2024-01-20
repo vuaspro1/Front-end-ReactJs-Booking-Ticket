@@ -1,75 +1,9 @@
 import Table from "react-bootstrap/Table";
-import { useEffect, useState } from "react";
-import { fetchAllUser } from "../../services/UserService";
-import Pagination from "../Pagination/Pagination";
-import ModalAdd from "../Modal/ModalAddUser";
-import ModalEdit from "../Modal/ModalEditUser";
-import ModalConfirm from "../Modal/ModalConfirm";
-import { fetchAllRole } from "../../services/RoleService";
 
 const TableUser = (props) => {
-  const [listUsers, setListUsers] = useState([]);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [dataUserEdit, setDataUserEdit] = useState({});
-  const [listRoles, setListRoles] = useState([]);
-  const [isShowModalAdd, setIsShowModalAdd] = useState(false);
-  const [isShowModalEdit, setIsShowModalEdit] = useState(false);
-  const [isShowModalConfirm, setIsShowModalConfirm] = useState(false);
-  const [selectId, setSelectId] = useState(0);
-
-  const handleClose = () => {
-    setIsShowModalAdd(false);
-    setIsShowModalEdit(false);
-    setIsShowModalConfirm(false);
-  };
-
-  const handleDeleteUser = (user) => {
-    setSelectId(user?.id);
-    setIsShowModalConfirm(true);
-  };
-
-  const handleEditUser = (user) => {
-    setIsShowModalEdit(true);
-    setDataUserEdit(user);
-  };
-
-  const handleUpdateTable = () => {
-    getUsers();
-  };
-
-  useEffect(() => {
-    getUsers(page);
-    getRoles();
-  }, [page]);
-
-  const getRoles = async (page) => {
-    let res = await fetchAllRole(page);
-    if (res && res.data) {
-      setListRoles(res.data);
-    }
-  };
-
-  const getUsers = async (page) => {
-    let res = await fetchAllUser(page || 1);
-    if (res && res.data) {
-      setListUsers(res.data);
-      setTotalPages(Math.ceil(res.totalItem / res.pageSize));
-    }
-  };
+  const { listUsers, handleDeleteUser, handleEditUser } = props;
   return (
     <>
-      <div className="my-3 add-new">
-        <span>
-          <b>List User:</b>
-        </span>
-        <button
-          className="btn btn-success"
-          onClick={() => setIsShowModalAdd(true)}
-        >
-          Add
-        </button>
-      </div>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -122,32 +56,6 @@ const TableUser = (props) => {
             })}
         </tbody>
       </Table>
-      <Pagination
-        setTotalPages={setTotalPages}
-        totalPages={totalPages}
-        setPage={setPage}
-        page={page}
-        getUsers={getUsers}
-      />
-      <ModalAdd
-        show={isShowModalAdd}
-        handleClose={handleClose}
-        handleUpdateTable={handleUpdateTable}
-        listRoles={listRoles}
-      />
-      <ModalEdit
-        show={isShowModalEdit}
-        handleClose={handleClose}
-        handleUpdateTable={handleUpdateTable}
-        dataUserEdit={dataUserEdit}
-        listRoles={listRoles}
-      />
-      <ModalConfirm
-        show={isShowModalConfirm}
-        handleClose={handleClose}
-        selectId={selectId}
-        handleUpdateTable={handleUpdateTable}
-      />
     </>
   );
 };
